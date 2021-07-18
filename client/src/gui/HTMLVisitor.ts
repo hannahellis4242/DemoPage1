@@ -7,6 +7,8 @@ import MainComponent from "./MainComponent";
 import Controller from "./Controller";
 import Loading from "./Loading";
 import Button from "./Button";
+import Welcome from "./Welcome";
+import AddComponent from "./AddComponent";
 
 const createPannel = (
   pannel: ControlPannel,
@@ -121,6 +123,84 @@ const createLoading = (visitable: Loading, element: HTMLElement) => {
   element.appendChild(div);
 };
 
+const createAdd = (visitable: AddComponent, element: HTMLElement) => {
+  const form = document.createElement("form");
+  {
+    const label = document.createElement("label");
+    label.htmlFor = "NameInput";
+    label.innerText = "Name";
+    form.appendChild(label);
+    const input = document.createElement("input");
+    input.id = "NameInput";
+    form.appendChild(input);
+  }
+  {
+    const div = document.createElement("div");
+    div.id = "address-input";
+    {
+      const label = document.createElement("label");
+      label.htmlFor = "Address1Input";
+      label.innerText = "Address";
+      div.appendChild(label);
+      const input = document.createElement("input");
+      input.id = "Address1Input";
+      div.appendChild(input);
+    }
+    {
+      const label = document.createElement("label");
+      label.htmlFor = "CountyInput";
+      label.innerText = "County";
+      div.appendChild(label);
+      const input = document.createElement("input");
+      input.id = "CountyInput";
+      div.appendChild(input);
+    }
+    {
+      const label = document.createElement("label");
+      label.htmlFor = "PostcodeInput";
+      label.innerText = "Postcode";
+      div.appendChild(label);
+      const input = document.createElement("input");
+      input.id = "PostcodeInput";
+      div.appendChild(input);
+    }
+    form.appendChild(div);
+  }
+  {
+    const div = document.createElement("div");
+    div.id = "detail-input";
+    {
+      const label = document.createElement("label");
+      label.htmlFor = "emailInput";
+      label.innerText = "Email";
+      div.appendChild(label);
+      const input = document.createElement("input");
+      input.id = "emailInput";
+      input.type = "email";
+      div.appendChild(input);
+    }
+    {
+      const label = document.createElement("label");
+      label.htmlFor = "TelephoneInput";
+      label.innerText = "Telephone";
+      div.appendChild(label);
+      const input = document.createElement("input");
+      input.id = "TelephoneInput";
+      input.type = "tel";
+      div.appendChild(input);
+    }
+    form.appendChild(div);
+  }
+  element.appendChild(form);
+};
+
+const createWelcome = (visitable: Welcome, element: HTMLElement) => {
+  const div = document.createElement("div");
+  div.innerText = "Welcome";
+  div.id = "welcome";
+  element.appendChild(div);
+};
+
 export default class HTMLVisitor implements Visitor {
   constructor(private element: HTMLElement, private controller: Controller) {}
   visit(visitable: Component) {
@@ -139,6 +219,12 @@ export default class HTMLVisitor implements Visitor {
     }
     if (visitable instanceof Loading) {
       createLoading(visitable, this.element);
+    }
+    if (visitable instanceof Welcome) {
+      createWelcome(visitable, this.element);
+    }
+    if (visitable instanceof AddComponent) {
+      createAdd(visitable, this.element);
     }
   }
 }

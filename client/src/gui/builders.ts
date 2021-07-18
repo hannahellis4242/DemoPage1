@@ -6,6 +6,8 @@ import Controller from "./Controller";
 import ControlPannel from "./ControlPannel";
 import MainComponent from "./MainComponent";
 import Loading from "./Loading";
+import Welcome from "./Welcome";
+import AddComponent from "./AddComponent";
 
 interface DatabaseContact {
   id: string;
@@ -17,13 +19,6 @@ interface DatabaseContact {
   postcode: string;
   telephone: string;
 }
-
-const addDatabaseElement = (item: DatabaseContact, contacts: ContactItems) => {
-  const address = new Address(item.address, item.county, item.postcode);
-  const details = new Details(item.email, item.telephone);
-  const contact = new Contact(item.customer, address, details);
-  contacts.addItem(contact);
-};
 
 const addDatabaseElements = async (
   main: MainComponent,
@@ -57,6 +52,7 @@ const buildLoadingScreen = (controller: Controller) => {
 };
 
 export const buildWelcomeView = (controller: Controller) => {
+  buildLoadingScreen(controller);
   const main = new MainComponent();
   {
     const pannel = new ControlPannel(main);
@@ -64,17 +60,21 @@ export const buildWelcomeView = (controller: Controller) => {
     pannel.addButton("add", () => buildAddView(controller));
     main.addChild(pannel);
   }
+  {
+    const welcome = new Welcome(main);
+    main.addChild(welcome);
+  }
   controller.setModel(main);
 };
 
 export const buildAllEntriesView = (controller: Controller) => {
   buildLoadingScreen(controller);
-  //build the data view
   {
     const main = new MainComponent();
     {
       const pannel = new ControlPannel(main);
-      pannel.addButton("test2", () => testBuilder2(controller));
+      pannel.addButton("Home", () => buildWelcomeView(controller));
+      pannel.addButton("Add", () => buildAddView(controller));
       main.addChild(pannel);
     }
     addDatabaseElements(main, controller);
@@ -83,24 +83,15 @@ export const buildAllEntriesView = (controller: Controller) => {
 
 export const buildAddView = (controller: Controller) => {
   const main = new MainComponent();
-  controller.setModel(main);
-};
-
-export const testBuilder2 = (controller: Controller) => {
-  const main = new MainComponent();
   {
     const pannel = new ControlPannel(main);
-    pannel.addButton("show all", () => buildAllEntriesView(controller));
+    pannel.addButton("Home", () => buildWelcomeView(controller));
+    pannel.addButton("Cancel", () => buildWelcomeView(controller));
     main.addChild(pannel);
   }
   {
-    const a = new Address("2 b street", "another county", "CC11 2DD");
-    const d = new Details("another@person.com", "0123456789");
-
-    const contact = new Contact("Jane Dobson", a, d);
-    const items = new ContactItems(main);
-    items.addChild(new ContactItem(contact, items));
-    main.addChild(items);
+    const addElement = new AddComponent(main);
+    main.addChild(addElement);
   }
   controller.setModel(main);
 };
