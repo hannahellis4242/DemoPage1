@@ -85,13 +85,8 @@ const createItem = (visitable: ContactItem, element: HTMLElement) => {
 const createItems = (items: ContactItems, element: HTMLElement) => {
   const div = document.createElement("div");
   div.id = "contacts";
-  console.log("90");
-  console.log(items);
-  console.log(items.children);
   const children = items.children;
-  console.log(children.length);
   items.children.forEach((child: Component) => {
-    console.log(child);
     if (child instanceof ContactItem) {
       createItem(child, div);
     }
@@ -123,16 +118,25 @@ const createLoading = (visitable: Loading, element: HTMLElement) => {
   element.appendChild(div);
 };
 
-const createAdd = (visitable: AddComponent, element: HTMLElement) => {
+const createAdd = (
+  visitable: AddComponent,
+  controller: Controller,
+  element: HTMLElement
+) => {
   const form = document.createElement("form");
+  const name = document.createElement("input");
+  const address = document.createElement("input");
+  const county = document.createElement("input");
+  const postcode = document.createElement("input");
+  const email = document.createElement("input");
+  const tel = document.createElement("input");
   {
     const label = document.createElement("label");
     label.htmlFor = "NameInput";
     label.innerText = "Name";
     form.appendChild(label);
-    const input = document.createElement("input");
-    input.id = "NameInput";
-    form.appendChild(input);
+    name.id = "NameInput";
+    form.appendChild(name);
   }
   {
     const div = document.createElement("div");
@@ -142,27 +146,24 @@ const createAdd = (visitable: AddComponent, element: HTMLElement) => {
       label.htmlFor = "Address1Input";
       label.innerText = "Address";
       div.appendChild(label);
-      const input = document.createElement("input");
-      input.id = "Address1Input";
-      div.appendChild(input);
+      address.id = "Address1Input";
+      div.appendChild(address);
     }
     {
       const label = document.createElement("label");
       label.htmlFor = "CountyInput";
       label.innerText = "County";
       div.appendChild(label);
-      const input = document.createElement("input");
-      input.id = "CountyInput";
-      div.appendChild(input);
+      county.id = "CountyInput";
+      div.appendChild(county);
     }
     {
       const label = document.createElement("label");
       label.htmlFor = "PostcodeInput";
       label.innerText = "Postcode";
       div.appendChild(label);
-      const input = document.createElement("input");
-      input.id = "PostcodeInput";
-      div.appendChild(input);
+      postcode.id = "PostcodeInput";
+      div.appendChild(postcode);
     }
     form.appendChild(div);
   }
@@ -174,22 +175,39 @@ const createAdd = (visitable: AddComponent, element: HTMLElement) => {
       label.htmlFor = "emailInput";
       label.innerText = "Email";
       div.appendChild(label);
-      const input = document.createElement("input");
-      input.id = "emailInput";
-      input.type = "email";
-      div.appendChild(input);
+      email.id = "emailInput";
+      email.type = "email";
+      div.appendChild(email);
     }
     {
       const label = document.createElement("label");
       label.htmlFor = "TelephoneInput";
       label.innerText = "Telephone";
       div.appendChild(label);
-      const input = document.createElement("input");
-      input.id = "TelephoneInput";
-      input.type = "tel";
-      div.appendChild(input);
+      tel.id = "TelephoneInput";
+      tel.type = "tel";
+      div.appendChild(tel);
     }
     form.appendChild(div);
+  }
+  {
+    const input = document.createElement("input");
+    input.type = "submit";
+    input.innerText = "add";
+    input.addEventListener("click", (event: MouseEvent) => {
+      event.preventDefault();
+      const data = {
+        customer: name.value,
+        address: address.value,
+        county: county.value,
+        postcode: postcode.value,
+        email: email.value,
+        telephone: tel.value,
+        joined: new Date().toString(),
+      };
+      visitable.callback(data);
+    });
+    form.appendChild(input);
   }
   element.appendChild(form);
 };
@@ -205,8 +223,6 @@ export default class HTMLVisitor implements Visitor {
   constructor(private element: HTMLElement, private controller: Controller) {}
   visit(visitable: Component) {
     if (visitable instanceof ContactItems) {
-      console.log("125");
-      console.log(visitable);
       createItems(visitable, this.element);
       return;
     }
@@ -224,7 +240,7 @@ export default class HTMLVisitor implements Visitor {
       createWelcome(visitable, this.element);
     }
     if (visitable instanceof AddComponent) {
-      createAdd(visitable, this.element);
+      createAdd(visitable, this.controller, this.element);
     }
   }
 }

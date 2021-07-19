@@ -1,5 +1,5 @@
 import Component from "./Component";
-export type ButtonCallback = () => void;
+import { ButtonCallback } from "./ButtonCallback";
 export default class Button extends Component {
   constructor(
     public text: string,

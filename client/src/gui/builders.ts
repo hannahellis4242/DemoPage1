@@ -8,27 +8,20 @@ import MainComponent from "./MainComponent";
 import Loading from "./Loading";
 import Welcome from "./Welcome";
 import AddComponent from "./AddComponent";
-
-interface DatabaseContact {
-  id: string;
-  address: string;
-  county: string;
-  customer: string;
-  email: string;
-  joined: string;
-  postcode: string;
-  telephone: string;
-}
+import {
+  DatabaseContactOut,
+  DatabaseContactIn,
+} from "../contacts/DatabaseContact";
 
 const addDatabaseElements = async (
   main: MainComponent,
   controller: Controller
 ) => {
-  await axios
+  axios
     .get("./addresses")
-    .then((value: AxiosResponse<DatabaseContact[]>) => {
+    .then((value: AxiosResponse<DatabaseContactOut[]>) => {
       const contacts = new ContactItems(main);
-      value.data.forEach((item: DatabaseContact) => {
+      value.data.forEach((item: DatabaseContactOut) => {
         const address = new Address(item.address, item.county, item.postcode);
         const details = new Details(item.email, item.telephone);
         const contact = new Contact(item.customer, address, details);
@@ -41,6 +34,24 @@ const addDatabaseElements = async (
     })
     .finally(() => {
       controller.setModel(main);
+    });
+};
+
+const addDatabaseItemCallback = async (
+  controller: Controller,
+  data: DatabaseContactIn
+) => {
+  buildLoadingScreen(controller);
+  axios
+    .post("./addresses", data)
+    .then(() => {
+      //would be better if we had a success view to show the user.
+      buildWelcomeView(controller);
+    })
+    .catch((err: Error) => {
+      //would be good if we could build something to show the user there was a fail.
+      buildWelcomeView(controller);
+      throw err;
     });
 };
 
@@ -90,7 +101,9 @@ export const buildAddView = (controller: Controller) => {
     main.addChild(pannel);
   }
   {
-    const addElement = new AddComponent(main);
+    const addElement = new AddComponent(main, (data: DatabaseContactIn) => {
+      addDatabaseItemCallback(controller, data);
+    });
     main.addChild(addElement);
   }
   controller.setModel(main);
