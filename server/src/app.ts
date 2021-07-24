@@ -1,8 +1,10 @@
 import express, { Request, Response, NextFunction } from "express";
 import path from "path";
 import router from "./routes/contacts";
+import { json } from "body-parser";
 
 const app = express();
+app.use(json());
 
 app.get("/", (req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, "../app.html"));

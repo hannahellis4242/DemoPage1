@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { getAll } from "../controllers/contacts";
+import { addContact, getAll } from "../controllers/contacts";
 
 const router = Router();
-//router.post("/", createBookmark);
+router.post("/", addContact);
 router.get("/", getAll);
 //router.get("/id/:id", getBookmarkById);
 //router.get("/tag/:tag", getBookmarkByTag);

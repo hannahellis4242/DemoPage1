@@ -1,6 +1,5 @@
-import { RequestHandler, response } from "express";
-import { Callback, MongoClient } from "mongodb";
-import Contact from "../models/contacts";
+import { RequestHandler } from "express";
+import { Callback, InsertOneResult, MongoClient } from "mongodb";
 
 const dbUrl = "mongodb://localhost:27017/";
 
@@ -17,7 +16,7 @@ class ResultGetter {
   };
 }
 
-export const getAll: RequestHandler = (req, res, next) => {
+export const getAll: RequestHandler = (_, res) => {
   MongoClient.connect(dbUrl)
     .then((client: MongoClient) => {
       const database = client.db("address_book");
@@ -25,9 +24,32 @@ export const getAll: RequestHandler = (req, res, next) => {
       const getter = new ResultGetter((x: Document[]) => {
         res.status(200).json(x);
       });
-      contacts.find().toArray(getter.getResult.bind(getter));
+      contacts
+        .find()
+        .sort({ customer: 1 })
+        .toArray(getter.getResult.bind(getter));
     })
     .catch((err) => {
+      throw err;
+    });
+};
+
+export const addContact: RequestHandler = (req, res) => {
+  console.log(req.body);
+  MongoClient.connect(dbUrl)
+    .then((client: MongoClient) => {
+      const database = client.db("address_book");
+      const contacts = database.collection("contacts");
+      contacts
+        .insertOne(req.body)
+        .then((result: InsertOneResult) => {
+          res.status(200).json(result);
+        })
+        .catch((err: Error) => {
+          throw err;
+        });
+    })
+    .catch((err: Error) => {
       throw err;
     });
 };
