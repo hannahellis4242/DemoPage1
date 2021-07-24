@@ -1,3 +1,3 @@
 #!/bin/bash
 sh startDB.sh &
-sh startServer &
+sh startServer.sh &

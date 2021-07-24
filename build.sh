@@ -4,7 +4,7 @@ cd client
 npm install
 npx webpack
 echo "building server"
-cd ../sever
+cd ../server
 npm install
 tsc
 echo "building finished"
